@@ -7,7 +7,9 @@ const router = require('express').Router();
 
 router.get('/',getAllUsers);
 
+
 router.get('/:userById',mdlwr.checkGetUsersById,getUsersById);
+
 
 router.post('/',mdlwr.checkCreateUsers,createUsers)
 

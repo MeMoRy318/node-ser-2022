@@ -1,6 +1,6 @@
 const {getUsers, setUsers} = require("../fsServices/fsServices");
-
 module.exports ={
+
     getAllUsers:async (req, res)=>{
         const users = await getUsers();
         res.status(200).json(users)
@@ -37,8 +37,9 @@ module.exports ={
         const users = await getUsers();
         const index = users.findIndex(value => value.id === +userById);
 
-        users.splice(index,1);
-        await setUsers(users);
-        res.sendStatus(204)
+            users.splice(index,1);
+            await setUsers(users);
+            res.sendStatus(204)
     }
+
 }

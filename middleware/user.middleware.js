@@ -6,10 +6,10 @@ module.exports = {
         const users = await getUsers();
         const index = users.findIndex(value => value.id === +userById);
 
-        if (typeof +userById !== 'number' || +userById <=1 || index === -1){
+        if (index === -1){
             res.status(422).json({messages:'not found'})
         }
-         next();
+        next();
     },
     checkCreateUsers:async (req,res,next)=>{
         const {name,age} = req.body;
