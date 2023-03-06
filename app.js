@@ -2,8 +2,8 @@ const express = require('express');
 
 const userRouter = require('./router/user.router');
 
+require('dotenv').config()
 
-const PORT = 5100;
 
 const app = express();
 
@@ -13,6 +13,6 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/users',userRouter);
 
-app.listen(PORT,()=>console.log(`server start ${PORT}`));
+app.listen(process.env.PORT,()=>console.log(`Server listen ${process.env.PORT}`));
 
 
