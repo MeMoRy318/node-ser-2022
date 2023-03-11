@@ -1,37 +1,25 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response, urlencoded } from "express";
 import mongoose from "mongoose";
 
-import { User } from "./models/User.module";
+import { userRoute } from "./routes/user.route";
+import { IError } from "./types/error.type";
 
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(urlencoded({ extended: true }));
 
-const PORT = 5100;
+app.use("/users", userRoute);
+
+app.use((err: IError, req: Request, res: Response, next: NextFunction) => {
+  res
+    .status(err.status || 500)
+    .json({ message: err.message, status: err.status });
+});
+
+const PORT = 7000;
 
 app.listen(PORT, async () => {
   await mongoose.connect("mongodb://127.0.0.1:27017/sep-2022");
   console.log(`server listen ${PORT}`);
-});
-
-app.get("/users", async (req: Request, res: Response) => {
-  const users = await User.find();
-  res.status(200).json(users);
-});
-
-app.post("/users", async (req: Request, res: Response) => {
-  try {
-    const body = req.body;
-    const user = await User.create({ ...body });
-    res.status(201).json({ data: user });
-  } catch (e) {
-    res.json({ message: e.message });
-  }
-});
-
-app.get("/users/:userId", async (req: Request, res: Response) => {
-  const { userId } = req.params;
-  const user = await User.findById({ userId });
-  res.json(user);
 });

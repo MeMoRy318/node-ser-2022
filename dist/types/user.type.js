@@ -5,5 +5,4 @@ var EGender;
 (function (EGender) {
     EGender["male"] = "male";
     EGender["female"] = "female";
-    EGender["mixed"] = "mixed";
 })(EGender = exports.EGender || (exports.EGender = {}));
