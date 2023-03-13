@@ -1,6 +1,6 @@
 import { model, Schema } from "mongoose";
 
-import { EGender } from "../types/user.types";
+import { EGender } from "../types/user.type";
 
 const userSchema = new Schema(
   {
@@ -10,9 +10,9 @@ const userSchema = new Schema(
     email: {
       type: String,
       required: [true, "email is required"],
-      trim: true,
-      unique: true,
+      unicode: true,
       lowercase: true,
+      trim: true,
     },
     password: {
       type: String,

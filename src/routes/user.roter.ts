@@ -1,18 +1,12 @@
 import { Router } from "express";
 
-import { userControllers } from "../controllers/user.controllers";
+import { userControllers } from "../controllers/userControllers";
 import { userMiddleware } from "../middleware/user.middleware";
 
 const router = Router();
 
 router.get("/", userMiddleware.getAll, userControllers.getAll);
-
 router.post("/", userMiddleware.create, userControllers.create);
-
-router.get("/:userId", userMiddleware.getByIdAndThrow, userControllers.getById);
-
-router.put("/:userId", userMiddleware.update, userControllers.update);
-
-router.delete("/:userId", userControllers.delete);
+router.patch("/:userId", userMiddleware.isObjectIdsValid);
 
 export const userRouter = router;

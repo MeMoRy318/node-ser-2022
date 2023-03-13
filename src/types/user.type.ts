@@ -3,15 +3,9 @@ export enum EGender {
   female = "female",
   mixed = "mixed",
 }
-
 export interface IUser {
   name: string;
-  email: string;
   password: string;
+  email: string;
   gender: string;
-}
-
-export interface ICommentResponse<T> {
-  message: string;
-  data?: T;
 }

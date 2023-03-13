@@ -1,37 +1,29 @@
 import { NextFunction, Request, Response } from "express";
+import { isObjectIdOrHexString } from "mongoose";
 
 import { ApiErrors } from "../errors/api.errors";
-import { User } from "../models/User.module";
+import { User } from "../models/user.model";
+import { userServices } from "../services/user.services";
+import { IRequest } from "../types/request.type";
+import { UserValidator } from "../validator/user.validator";
 
 class UserMiddleware {
-  public async getByIdAndThrow(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const { userId } = req.params;
-      const user = await User.findById(userId);
-      if (!user) throw new ApiErrors("user not found", 404);
-      next();
-    } catch (e) {
-      next(e);
-    }
-  }
-
   public async getAll(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const users = await User.find();
-      if (!users) throw new ApiErrors("not found", 404);
+      const users = await userServices.getAll();
+      if (!users.length) throw new ApiErrors("Users not found", 422);
+      req.body = users;
       next();
     } catch (e) {
       next(e);
     }
   }
+
+  // validator
 
   public async create(
     req: Request,
@@ -39,32 +31,44 @@ class UserMiddleware {
     next: NextFunction
   ): Promise<void> {
     try {
-      const user = req.body;
-      if (user?.name && user?.email && user?.gender && user?.password) {
-        next();
-      } else {
-        throw new ApiErrors("bad request", 400);
-      }
+      const { error, value } = UserValidator.createUser.validate(req.body);
+      if (error) throw new ApiErrors(error.message, 400);
+      req.body = value;
+      next();
     } catch (e) {
       next(e);
     }
   }
-  public async update(
+
+  public async isObjectIdsValid(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const { userId } = req.params;
-      const user = await User.findById(userId);
-      if (user?.name && user?.email && user?.gender && user?.password) {
-        next();
-      } else {
-        throw new ApiErrors("user not found", 404);
+      if (!isObjectIdOrHexString(req.params.userId)) {
+        throw new ApiErrors("id not valid", 400);
       }
+      next();
     } catch (e) {
       next(e);
     }
+  }
+  public getDynamicallyAndThrow(
+    fieldName: string,
+    from = "body",
+    dbFiled = fieldName
+  ) {
+    return async (req: IRequest, res: Response, next: NextFunction) => {
+      try {
+        const fieldValue = req[from][fieldName];
+        const user = await User.findOne({ [dbFiled]: fieldValue });
+        if (user) throw new ApiErrors("tes errors", 400);
+        next();
+      } catch (e) {
+        next(e);
+      }
+    };
   }
 }
 export const userMiddleware = new UserMiddleware();
